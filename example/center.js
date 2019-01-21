@@ -8,9 +8,13 @@ export default new Vuec.Center({
     name: 'liuyang'
   },
   mutations: {
-    changeName (state) {
-      console.log(state)
-      state.name = 'jike'
+    changeName (state, payload) {
+      state.name = payload
+    }
+  },
+  actions: {
+    changeName (context, payload) {
+      setTimeout(()=> context.commit('changeName', payload), 1000)
     }
   }
 })
