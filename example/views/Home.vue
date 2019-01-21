@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     changeState () {
-      this.$center.state.name = '222'
+      this.$center.commit('changeName', {a: 1})
     }
   }
 }

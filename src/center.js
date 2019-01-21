@@ -13,12 +13,18 @@ export function install (_Vue) {
 }
 
 export class Center {
-  constructor (options) {
+  constructor (options= {}) {
     let center = this
+    console.log(options, 'ooo')
+    this.mutations = options.mutations
     observeState(center, options.state)
   }
   get state () {  // 代理了this.$center.state的最终访问值
     return this._vm.$data.$$state
+  }
+  commit (_type, _payload) {
+    console.log(_type, _payload)
+    this.mutations[_type](this.state, _payload)
   }
 }
 
