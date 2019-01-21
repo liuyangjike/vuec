@@ -1,11 +1,32 @@
+import applyMixin from './mixins'
 
-export function install () {
-  console.log('install')
+
+let Vue // 全局变量, 保存install里的Vue
+
+export function install (_Vue) {
+  if (!Vue) {
+    _Vue.mixin({
+      beforeCreate: applyMixin // 这里不能箭头函数, 因为箭头函数会自动绑定作用域
+    })
+  }
+  Vue = _Vue
 }
 
 export class Center {
   constructor (options) {
-    console.log('center')
-    console.log(options)
+    let center = this
+    observeState(center, options.state)
   }
+  get state () {  // 代理了this.$center.state的最终访问值
+    return this._vm.$data.$$state
+  }
+}
+
+
+function observeState(center, state) { // 响应式state
+  center._vm = new Vue({
+    data: {
+      $$state: state
+    }
+  })
 }

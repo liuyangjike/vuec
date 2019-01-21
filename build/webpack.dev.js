@@ -9,6 +9,7 @@ module.exports = merge(baseConfig, {
   devServer: {
     contentBase: path.resolve(__dirname, '../dist'),
     open: true,
+    port: 8000,
     hot: true
   },
   plugins: [
