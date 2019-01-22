@@ -20,9 +20,15 @@ export default new Vuec.Center({
   modules: {
     a: {
       state: {nameA: 'a'},
+      mutations: {
+        changeNameA (state, payload) {
+          console.log(state)
+          // state.name = payload
+        }
+      },
       modules: {
         a1: { state: {nameA1: 'a1'}}
-      }
+      },
     },
     b: {
       state: {nameB: 'b'}
