@@ -12,6 +12,7 @@ export default class ModuleCollection {
     }, this.root)
   }
 
+  // 注册模块
   register (path, rawModule) {
     let newModule = new Module(rawModule)
     if (!path.length) {

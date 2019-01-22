@@ -6,12 +6,13 @@ let Vue // 全局变量, 保存install里的Vue
 
 export class Center {
   constructor (options= {}) {
-    let center = this
     this.mutations = options.mutations
     this.actions = options.actions
     this._modules = new ModuleCollection(options)
+    const state = this._modules.root.state
+    installModule(this, state, [], this._modules.root)
+    const center = this
     observeState(center, options.state)
-    console.log(this)
   }
   get state () {  // 代理了this.$center.state的最终访问值
     return this._vm.$data.$$state
@@ -46,6 +47,18 @@ export class Center {
 }
 
 
+function installModule(center, rootState, path, module) {
+  const isRoot = !path.length
+  if (!isRoot) {
+    const parentState =  getNestedState(rootState, path.slice(0, -1))
+    const moduleName = path[path.length - 1]  // 模块名
+    parentState[moduleName] = module.state
+  }
+  Object.keys(module._children).forEach(key => {
+    installModule(center, rootState, path.concat(key), module._children[key])
+  })
+}
+
 function observeState(center, state) { // 响应式state
   center._vm = new Vue({
     data: {
@@ -53,6 +66,13 @@ function observeState(center, state) { // 响应式state
     }
   })
 }
+
+function getNestedState (state, path) { // 根据路径path去一层层寻找模块, 返回path数组的最后元素对应的模块
+  return path.length
+    ? path.reduce((state, key) => state[key], state)
+    : state
+}
+
 
 function unifyObjectStyle (type, payload) {
   if (isObject(type) && type.type) {
