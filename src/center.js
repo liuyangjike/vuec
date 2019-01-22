@@ -1,22 +1,17 @@
 import applyMixin from './mixins'
 import {isObject} from './utils'
-let Vue // 全局变量, 保存install里的Vue
+import ModuleCollection from './module/module-collection'
 
-export function install (_Vue) {
-  if (!Vue) {
-    _Vue.mixin({
-      beforeCreate: applyMixin // 这里不能箭头函数, 因为箭头函数会自动绑定作用域
-    })
-  }
-  Vue = _Vue
-}
+let Vue // 全局变量, 保存install里的Vue
 
 export class Center {
   constructor (options= {}) {
     let center = this
     this.mutations = options.mutations
     this.actions = options.actions
+    this._modules = new ModuleCollection(options)
     observeState(center, options.state)
+    console.log(this)
   }
   get state () {  // 代理了this.$center.state的最终访问值
     return this._vm.$data.$$state
@@ -65,4 +60,14 @@ function unifyObjectStyle (type, payload) {
     type = type.type
   }
   return {type, payload}
+}
+
+
+export function install (_Vue) {
+  if (!Vue) {
+    _Vue.mixin({
+      beforeCreate: applyMixin // 这里不能箭头函数, 因为箭头函数会自动绑定作用域
+    })
+  }
+  Vue = _Vue
 }
