@@ -9,6 +9,7 @@ export default new Vuec.Center({
   },
   mutations: {
     changeName (state, payload) {
+      debugger
       state.name = payload
     }
   },

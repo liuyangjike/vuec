@@ -10,16 +10,26 @@ export class Center {
     this._actions = options.actions
     this._modules = new ModuleCollection(options)
     const state = this._modules.root.state
-    installModule(this, state, [], this._modules.root)
+    // installModule(this, state, [], this._modules.root)
     const center = this
+    // observeState(center, options.state)
+    const {dispatch, commit} = this  // 取出原型上的commit, dispatch
+    this.dispatch = function boundDispatch(type, payload) {  // //local的dispatch的this无法指向Center
+      return dispatch.call(center, type, payload)
+    }
+    this.commit = function boundCommit (type, payload, options) { //local的commit的this无法指向Center
+      return commit.call(center, type, payload, options)
+    }
+    installModule(this, state, [], this._modules.root)
     observeState(center, options.state)
-    console.log(this)
   }
   get state () {  // 代理了this.$center.state的最终访问值
     return this._vm.$data.$$state
   }
-  commit (_type, _payload) {
+  commit (_type, _payload) {  // 原型属性commit
     const {type, payload} = unifyObjectStyle(_type, _payload)
+
+    console.log(this)
     const entry = this._mutations[type]
     if (!entry) {
       console.error(`[vuec] unkown mutation type: ${type}`)
@@ -39,12 +49,9 @@ export class Center {
       console.error(`[vuec] unkown actions type: ${type}`)
       return
     }
-    const result = new Promise(
-      (resolve) => {
-        entry(this, payload)
-        resolve()
-      }
-    )
+    const result = Promise.all(entry.map(handler =>  //一个type对应多个action, 可能含有多个异步
+      handler(payload)
+    ))
     return result
   }
 }
@@ -65,6 +72,9 @@ function installModule(center, rootState, path, module) {
   module.forEachMutation((mutation, key) => {
     registerMutation(center, key, mutation, local)
   })
+  module.forEachAction((action, key) => {
+    registerAction(center, key, action, local)    
+  })
   module.forEachChild((child, key) => {
     installModule(center, rootState, path.concat(key), child)
   })
@@ -78,6 +88,14 @@ function registerMutation (center, type, handler, local) {
   })
 }
 
+
+function registerAction (center, type, handler, local) {
+  const entry = center._actions[type] = []
+  entry.push(function wrappedActionHanlder (payload) {
+    handler(local, payload)
+  })
+}
+
 function observeState(center, state) { // 响应式state
   center._vm = new Vue({
     data: {
@@ -87,12 +105,10 @@ function observeState(center, state) { // 响应式state
 }
 
 function makeLocalContext(center, path) {
-
   const local = {
     dispatch: center.dispatch,
     commit: center.commit,
   }
-
   // 将local的state定义成惰性求值,因为这时的center.state还不存在
   Object.defineProperties(local, {
     state: {
@@ -101,7 +117,6 @@ function makeLocalContext(center, path) {
       }
     }
   })
-
   return local
 }
 
