@@ -26,6 +26,7 @@ export class Center {
       return commit.call(center, type, payload, options)
     }
     installModule(this, state, [], this._modules.root)
+
     resetCenterVM(center, state)
 
   }
@@ -76,6 +77,7 @@ function installModule(center, rootState, path, module) {
   if (!isRoot) {
     const parentState =  getNestedState(rootState, path.slice(0, -1))
     const moduleName = path[path.length - 1]  // 模块名
+    // Vue.set(parentState, moduleName, module.state)
     parentState[moduleName] = module.state
   }
 
@@ -105,7 +107,6 @@ function registerMutation (center, type, handler, local) {
     handler( local.state, payload)
   })
 }
-
 
 function registerAction (center, type, handler, local) {
   const entry = center._actions[type] = []
@@ -155,7 +156,6 @@ function resetCenterVM(center, state) {
 
 function enableStrictMode(center) {
   center._vm.$watch(function () { return this._data.$$state}, () => {
-    console.log(center._committing)
     assert(center._committing, `do not mutate vuex center state outside mutation handlers`)
   }, {deep: true, sync: true})
 }

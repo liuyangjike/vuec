@@ -8,7 +8,7 @@ export default new Vuec.Center({
     name: 'liuyang',
     job: 'IT'
   },
-  strict: true,
+  // strict: true,
   mutations: {
     changeName (state, payload) {
       state.name = payload
@@ -29,8 +29,9 @@ export default new Vuec.Center({
       state: {nameA: 'a'},
       mutations: {
         changeNameA (state, payload) {
+          console.log(state, payload)
+          state.nameA = payload
           console.log(state)
-          // state.name = payload
         }
       },
       modules: {
