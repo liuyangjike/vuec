@@ -23,6 +23,7 @@ export default {
   },
   methods: {
     changeState () {
+      // this.$center.state.name ='strict'
       this.$center.dispatch('changeName', 'jiekeknff')
     }
   }

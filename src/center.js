@@ -1,15 +1,19 @@
 import applyMixin from './mixins'
-import {isObject, forEachValue} from './utils'
+import {isObject, forEachValue, assert} from './utils'
 import ModuleCollection from './module/module-collection'
 
 let Vue // 全局变量, 保存install里的Vue
 
 export class Center {
   constructor (options= {}) {
+
+    const {strict = false} = options
     this._mutations = options.mutations
     this._actions = options.actions
     this._modules = new ModuleCollection(options)
     this._wrappedGetters = Object.create(null)
+    this._committing = false  // 在严格模式下的只能通过mutation变更
+    this.strict = strict
     const state = this._modules.root.state
     // installModule(this, state, [], this._modules.root)
     const center = this
@@ -23,7 +27,7 @@ export class Center {
     }
     installModule(this, state, [], this._modules.root)
     resetCenterVM(center, state)
-    // observeState(center, options.state)
+
   }
   get state () {  // 代理了this.$center.state的最终访问值
     return this._vm.$data.$$state
@@ -36,8 +40,10 @@ export class Center {
       console.error(`[vuec] unkown mutation type: ${type}`)
       return
     }
-    entry.forEach(handler => {
-      handler(payload)
+    this._withCommit(()=> {
+      entry.forEach(handler => {
+        handler(payload)
+      })
     })
   }
   /* 在 mutation 中混合异步调用会导致你的程序很难调试。
@@ -55,7 +61,14 @@ export class Center {
     ))
     return result
   }
+  _withCommit (fn) {
+    const _committing = this._committing
+    this._committing = true
+    fn()
+    this._committing = _committing
+  }
 }
+
 
 
 function installModule(center, rootState, path, module) {
@@ -112,10 +125,10 @@ function registerGetter(center, type, rawGetter, local) {
   }
 }
 
-
+// 实例化
 function resetCenterVM(center, state) {
   // const oldVm = center._vm
-  center.getters = {}
+  center.getters = {} // 外部访问的就是它
   const wrappedGetters = center._wrappedGetters
   const computed = {}
   forEachValue(wrappedGetters, (fn, key) => {
@@ -133,9 +146,19 @@ function resetCenterVM(center, state) {
     },
     computed
   })
-
+  
+  if (center.strict) {
+    enableStrictMode(center)
+  }
 }
 
+
+function enableStrictMode(center) {
+  center._vm.$watch(function () { return this._data.$$state}, () => {
+    console.log(center._committing)
+    assert(center._committing, `do not mutate vuex center state outside mutation handlers`)
+  }, {deep: true, sync: true})
+}
 
 function makeLocalContext(center, path) {
   const local = {

@@ -8,6 +8,7 @@ export default new Vuec.Center({
     name: 'liuyang',
     job: 'IT'
   },
+  strict: true,
   mutations: {
     changeName (state, payload) {
       state.name = payload
@@ -19,7 +20,7 @@ export default new Vuec.Center({
     }
   },
   getters: {
-    getJoin(state) {
+    getJoin(state, getters, cState, cGetters) {
       return state.name + state.job
     }
   },
