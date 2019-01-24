@@ -5,17 +5,22 @@ Vue.use(Vuec)
 
 export default new Vuec.Center({
   state: {
-    name: 'liuyang'
+    name: 'liuyang',
+    job: 'IT'
   },
   mutations: {
     changeName (state, payload) {
-      debugger
       state.name = payload
     }
   },
   actions: {
     changeName (context, payload) {
       setTimeout(()=> context.commit('changeName', payload), 1000)
+    }
+  },
+  getters: {
+    getJoin(state) {
+      return state.name + state.job
     }
   },
   modules: {

@@ -1,5 +1,5 @@
 import applyMixin from './mixins'
-import {isObject} from './utils'
+import {isObject, forEachValue} from './utils'
 import ModuleCollection from './module/module-collection'
 
 let Vue // 全局变量, 保存install里的Vue
@@ -9,6 +9,7 @@ export class Center {
     this._mutations = options.mutations
     this._actions = options.actions
     this._modules = new ModuleCollection(options)
+    this._wrappedGetters = Object.create(null)
     const state = this._modules.root.state
     // installModule(this, state, [], this._modules.root)
     const center = this
@@ -21,7 +22,8 @@ export class Center {
       return commit.call(center, type, payload, options)
     }
     installModule(this, state, [], this._modules.root)
-    observeState(center, options.state)
+    resetCenterVM(center, state)
+    // observeState(center, options.state)
   }
   get state () {  // 代理了this.$center.state的最终访问值
     return this._vm.$data.$$state
@@ -29,7 +31,6 @@ export class Center {
   commit (_type, _payload) {  // 原型属性commit
     const {type, payload} = unifyObjectStyle(_type, _payload)
 
-    console.log(this)
     const entry = this._mutations[type]
     if (!entry) {
       console.error(`[vuec] unkown mutation type: ${type}`)
@@ -75,6 +76,10 @@ function installModule(center, rootState, path, module) {
   module.forEachAction((action, key) => {
     registerAction(center, key, action, local)    
   })
+
+  module.forEachGetter((getter, key) => {
+    registerGetter(center, key, getter, local)
+  })
   module.forEachChild((child, key) => {
     installModule(center, rootState, path.concat(key), child)
   })
@@ -96,21 +101,52 @@ function registerAction (center, type, handler, local) {
   })
 }
 
-function observeState(center, state) { // 响应式state
+function registerGetter(center, type, rawGetter, local) {
+  center._wrappedGetters[type] = function wrappedGetter(center) {
+    return rawGetter(
+      local.state,
+      local.getters,
+      center.state,
+      center.getters
+    )
+  }
+}
+
+
+function resetCenterVM(center, state) {
+  // const oldVm = center._vm
+  center.getters = {}
+  const wrappedGetters = center._wrappedGetters
+  const computed = {}
+  forEachValue(wrappedGetters, (fn, key) => {
+    computed[key] = () => fn(center)  // 构造成对象的形式, 然后直接用计算属性来注册getters
+    Object.defineProperty(center.getters, key, {
+      get: () => center._vm[key],
+      enumerable: true  // for
+    })
+  })
+
+  // 利用Vue的响应系统形成data和computed
   center._vm = new Vue({
     data: {
       $$state: state
-    }
+    },
+    computed
   })
+
 }
+
 
 function makeLocalContext(center, path) {
   const local = {
     dispatch: center.dispatch,
     commit: center.commit,
   }
-  // 将local的state定义成惰性求值,因为这时的center.state还不存在
+  // 将local的state定义成惰性求值,因为这时的center.state还不存在, center.getter这时也不存在
   Object.defineProperties(local, {
+    getters: {
+      get: center.getters
+    },
     state: {
       get: function () {
         return getNestedState(center.state, path)

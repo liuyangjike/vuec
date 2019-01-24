@@ -1,6 +1,7 @@
 <template>
   <div>
     <h2>Home</h2>
+    <h3>{{$center.getters.getJoin}}</h3>
     <div>{{$center.state.name}}</div>
     <button @click='changeState'>change</button>
     <button @click="()=> {this.$router.push('/foo')}">foo</button>
