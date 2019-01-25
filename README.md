@@ -1,4 +1,4 @@
-## easy-css-loader
+## vuec
 
 ![](https://img.shields.io/badge/vuec-1.0.0-blue.svg)
 
