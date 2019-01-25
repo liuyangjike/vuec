@@ -3,7 +3,7 @@
     <h2>Home</h2>
     <h3>{{$center.getters.getJoin}}</h3>
     <div>{{$center.state.a.nameA}}</div>
-    <h4>{{nameMap}}COm</h4>
+    <h4>{{name}}COm</h4>
     <button @click='changeState'>change</button>
     <button @click="()=> {this.$router.push('/foo')}">foo</button>
     <router-view></router-view>
@@ -14,11 +14,14 @@
 <script>
 import vuec from '@/index'
 const mapState = vuec.mapState
+const mapMutations = vuec.mapMutations
+const mapActions = vuec.mapActions
+
 
 export default {
   data () {
     return {
-      name: 'Home'
+      // name: 'Home'
     }
   },
   created () {
@@ -26,16 +29,24 @@ export default {
     // console.log(this)
   },
   computed: {
-    ...mapState({
-      nameMap: function (state) {
-        return state.name
-      },
-    })
+    ...mapState(['name'])
   },
   methods: {
     changeState () {
-      this.$center.commit('changeName', 'jiekeknff')
-    }
+      // this.$center.commit('changeName', 'jiekeknff')
+      // this.changeNameK('huehuehu')
+      this.changeName('actions')
+    },
+    // ...mapMutation({
+    //   changeNameK: 'changeName'
+    // })
+    // ...mapMutation(['changeName'])  // 映射关系
+    // ...mapMutations({
+    //   changeNameK: function (commit, payload) {
+    //     commit('changeName', 'poijhh')
+    //   }
+    // }),
+    ...mapActions(['changeName'])
   }
 }
 </script>

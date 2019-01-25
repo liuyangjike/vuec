@@ -1,7 +1,9 @@
 import {Center, install} from './center'
-import {mapState} from './helpers'
+import {mapState, mapMutations, mapActions} from './helpers'
 export default {
   Center, 
   install,
-  mapState
+  mapState,
+  mapMutations,
+  mapActions,
 }
