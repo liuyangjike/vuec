@@ -1,12 +1,15 @@
 <template>
   <div>
-    <h2>Home</h2>
-    <h3>{{$center.getters.getJoin}}</h3>
-    <div>{{$center.state.a.nameA}}</div>
-    <h4>{{name}}COm</h4>
-    <h4>{{getJoin}}-m</h4>
-
-    <button @click='changeState'>change</button>
+    <h2>例子</h2>
+    <h4>{{$center.state.name}} <span class='explain'>----> $center.state.name</span></h4>
+    <h4>{{$center.state.a.nameA}} <span class='explain'>---> $center.state.a.nameA</span></h4>
+    <h4>{{$center.getters.getJoin}} <span class='explain'>---> $center.getters.getJoin</span></h4>
+    <h4>{{name}} <span class='explain'> ---->...mapState(['name'])</span></h4>
+    <h4>{{getJoin}}<span class='explain'> ---> ...mapGetters(['getJoin'])</span></h4>
+    <button @click='mutationName'>mutationName</button>
+    <button @click='actionName'>actionName</button>
+    <button @click="mapMutationsName('mapMutation')">mapMutationsName</button>
+    <button @click='mapActionsName("mapActions")'>mapActionsName</button>
     <button @click="()=> {this.$router.push('/foo')}">foo</button>
     <router-view></router-view>
   </div>
@@ -23,7 +26,6 @@ const mapGetters = vuec.mapGetters
 export default {
   data () {
     return {
-      // name: 'Home'
     }
   },
   created () {
@@ -35,21 +37,38 @@ export default {
     ...mapGetters(['getJoin'])
   },
   methods: {
+    mutationName () {
+      this.$center.commit('changeName', 'mutation')
+    },
+    actionName () {
+      this.$center.dispatch('changeName', 'action')
+    },
     changeState () {
       // this.$center.commit('changeName', 'jiekeknff')
       // this.changeNameK('huehuehu')
       this.changeName('actions')
     },
-    // ...mapMutation({
-    //   changeNameK: 'changeName'
-    // })
-    // ...mapMutation(['changeName'])  // 映射关系
+    ...mapMutations({
+      mapMutationsName: 'changeName'
+    }),
+    // ...mapMutations(['changeName'])  // 映射关系
     // ...mapMutations({
     //   changeNameK: function (commit, payload) {
     //     commit('changeName', 'poijhh')
     //   }
     // }),
-    ...mapActions(['changeName'])
+    // ...mapActions(['changeName'])
+    ...mapActions({
+      mapActionsName: 'changeName'
+    })
+
   }
 }
 </script>
+
+<style  scoped>
+  .explain{
+    font-weight: 300;
+    color: #555
+  }
+</style>
