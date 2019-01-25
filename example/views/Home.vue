@@ -4,6 +4,8 @@
     <h3>{{$center.getters.getJoin}}</h3>
     <div>{{$center.state.a.nameA}}</div>
     <h4>{{name}}COm</h4>
+    <h4>{{getJoin}}-m</h4>
+
     <button @click='changeState'>change</button>
     <button @click="()=> {this.$router.push('/foo')}">foo</button>
     <router-view></router-view>
@@ -16,7 +18,7 @@ import vuec from '@/index'
 const mapState = vuec.mapState
 const mapMutations = vuec.mapMutations
 const mapActions = vuec.mapActions
-
+const mapGetters = vuec.mapGetters
 
 export default {
   data () {
@@ -29,7 +31,8 @@ export default {
     // console.log(this)
   },
   computed: {
-    ...mapState(['name'])
+    ...mapState(['name']),
+    ...mapGetters(['getJoin'])
   },
   methods: {
     changeState () {

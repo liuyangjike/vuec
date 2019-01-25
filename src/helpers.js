@@ -6,12 +6,25 @@ export const mapState = function (states) {
   normalizeMap(states).forEach(({key, val}) => {
     res[key] = function mappedState () {
       return typeof val === 'function'  // 判断用户输入的数组还是对象
-        ? val.call(this, this.$center.state, this.$center.gettters)
+        ? val.call(this, this.$center.state, this.$center.getters)
         : this.$center.state[val]
     }
   })
   return res
 }
+
+export const mapGetters = function (getters) {
+  const res = {}
+  normalizeMap(getters).forEach(({key, val}) => {
+    res[key] = function mappedGetter () {
+      return this.$center.getters[val]
+    }
+  })
+  return res
+}
+
+
+
 
 export const mapMutations = function (mutations) {
   const res = {}
