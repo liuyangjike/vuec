@@ -3,6 +3,7 @@ import App from './App'
 import router from './router'
 import center from './center'
 
+console.log(this, 'oppokjjhh')
 new Vue({
   el: '#app',
   router,

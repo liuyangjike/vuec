@@ -3,7 +3,7 @@
     <h2>Home</h2>
     <h3>{{$center.getters.getJoin}}</h3>
     <div>{{$center.state.a.nameA}}</div>
-    <h4>{{nameMap}}</h4>
+    <h4>{{nameMap}}COm</h4>
     <button @click='changeState'>change</button>
     <button @click="()=> {this.$router.push('/foo')}">foo</button>
     <router-view></router-view>
@@ -22,30 +22,19 @@ export default {
     }
   },
   created () {
-    console.log(this.$center.state)
-    const res = mapState({
-      nameMap: function (state) {
-        console.log(this)
-        console.log(state.name)
-        return state.name
-      },
-    })
-    console.log(res, 'ppp')
     // this.$center.state = '222'
+    // console.log(this)
   },
   computed: {
     ...mapState({
       nameMap: function (state) {
-        console.log(this)
-        console.log(state.name)
         return state.name
       },
     })
   },
   methods: {
     changeState () {
-      // this.$center.state.name ='strict'
-      this.$center.commit('changeNameA', 'jiekeknff')
+      this.$center.commit('changeName', 'jiekeknff')
     }
   }
 }
