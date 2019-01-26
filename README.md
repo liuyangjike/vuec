@@ -196,6 +196,7 @@ dispatch (_type, _payload) { // tong
 }
 ```
 **mapState**
+
 `map**`有两种输入形式
 ```js
 computed: {
@@ -211,9 +212,7 @@ methods: {
   // ...mapMutations(['changeName'])  // 映射关系
 }
 ```
-其实就是将执行`mapState()`返回一个对象, 通过`...`添加到计算属性中, 函数时: `val.call(this, this.$center.state, this.$center.getters)`传入`state`使得用户能访问`state`,
-
-`getters`, 数组时: `this.$center.state[val]`直接返回对应值;
+其实就是将执行`mapState()`返回一个对象, 通过`...`添加到计算属性中, 函数时: `val.call(this, this.$center.state, this.$center.getters)`传入`state`使得用户能访问`state`和`getters`, 数组时: `this.$center.state[val]`直接返回对应值
 
 `mapMutations()`也是类似的, 返回一个对象,通过`...`添加到`methods`里,一般`val`都是`function`,
 执行`center`实例上的`commit.apply(this.$center, [val].concat(args))`, `val`就成为`type`, `args`就时`payload`,
