@@ -18,8 +18,10 @@
 ## 解析
 
 ### 目的
+
 不同组件共享的某些状态
-<img src="http://ww1.sinaimg.cn/large/b44313e1ly1fzjsg3h9jbj20j10e4t9b.jpg"/>
+
+![](http://ww1.sinaimg.cn/large/b44313e1ly1fzjsg3h9jbj20j10e4t9b.jpg)
 
 
 
