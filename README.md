@@ -33,7 +33,7 @@
 export function install (_Vue) {
   if (!Vue) {
     _Vue.mixin({
-      beforeCreate: applyMixin // 这里不能箭头函数, 因为箭头函数会自动绑定作用域
+      beforeCreate: applyMixin // 这里不能箭头函数, 因为箭头函数会`this`会指向`center`
     })
   }
   Vue = _Vue
@@ -251,7 +251,5 @@ function normalizeMap (map) {
 }
 ```
 ## 参考
-
 [vuex](https://github.com/vuejs/vuex)
-
 [Vue.js技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
