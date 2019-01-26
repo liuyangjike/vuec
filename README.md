@@ -255,4 +255,5 @@ function normalizeMap (map) {
 ```
 ## 参考
 [vuex](https://github.com/vuejs/vuex)
+
 [Vue.js技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
