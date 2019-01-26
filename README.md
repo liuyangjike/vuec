@@ -94,15 +94,11 @@ this._modules = new ModuleCollection(options)
 ```
 **安装模块**
 
-1.根据模块树,完成对`state`树的构建
-
+1. 根据模块树,完成对`state`树的构建
 2. 当前模块本地上下文构建`local`
-
-3.在`center`实例的`_muattions[type]`上注册`wrappedMutationHandler`
-
-4.在`center`实例的`_actions[type]`上注册`wrappedActionHandler`
-
-5.在center实例的`_wrappedGetters[type]`上注册`wrappedGetter`
+3. 在`center`实例的`_muattions[type]`上注册`wrappedMutationHandler`
+4. 在`center`实例的`_actions[type]`上注册`wrappedActionHandler`
+5. 在center实例的`_wrappedGetters[type]`上注册`wrappedGetter`
 
 `wrappedMutationHandler`里面包含用户写的`mutation`, 往里传入当前模块的`state`, 用户就能获得`state`进行更改,其它`actions`等也是类似的
 ```js
@@ -128,11 +124,9 @@ get state () {  // 代理了this.$center.state的最终访问值
     return this._vm.$data.$$state
 }
 ```
-1.利用`new Vue({})`转化成响应式
-
+1. 利用`new Vue({})`转化成响应式
 2. 将`state`转化成`data`属性
-
-3.将`getter`转化成`computed`
+3. 将`getter`转化成`computed`
 
 ### 实例化Vue组件
 ```js
@@ -163,58 +157,58 @@ function vuecInit () {
 
 **commit**
 
-这里传入的 `_type` 就是 `mutation` 的 type，我们可以从 `store._mutations `找到对应的函数数组，遍历它们执行获取到每个 handler 然后执行，实际上就是执行了 `wrappedMutationHandler(playload)`，接着会执行我们定义的 `mutation` 函数，并传入当前模块的`state`，所以我们的 `mutation` 函数也就是对当前模块的 `state `做修改。
+这里传入的 `_type` 就是 `mutation` 的 type，我们可以从 `store._mutations `找到对应的函数数组，遍历它们执行获取到每个 `handler` 然后执行，实际上就是执行了 `wrappedMutationHandler(playload)`，接着会执行我们定义的 `mutation` 函数，并传入当前模块的`state`，所以我们的 `mutation` 函数也就是对当前模块的 `state `做修改。
 ```js
-  commit (_type, _payload) {  // 原型属性commit
-    const {type, payload} = unifyObjectStyle(_type, _payload)
+commit (_type, _payload) {  // 原型属性commit
+  const {type, payload} = unifyObjectStyle(_type, _payload)
 
-    const entry = this._mutations[type]
-    if (!entry) {
-      console.error(`[vuec] unkown mutation type: ${type}`)
-      return
-    }
-    this._withCommit(()=> {  // 开关效果,严格模式下有用
-      entry.forEach(handler => {
-        handler(payload)  // handler就是
-      })
-    })
+  const entry = this._mutations[type]
+  if (!entry) {
+    console.error(`[vuec] unkown mutation type: ${type}`)
+    return
   }
+  this._withCommit(()=> {  // 开关效果,严格模式下有用
+    entry.forEach(handler => {
+      handler(payload)  // handler就是
+    })
+  })
+}
 ```
 **dispatch**
 这里传入的 `_type` 就是 `action` 的 `type`，我们可以从 `store._actions` 找到对应的函数数组，遍历它们执行获取到每个 `handler` 然后执行，实际上就是执行了 `wrappedActionHandler(payload)`，接着会执行我们定义的 `action` 函数，并传入一个对象，包含了当前模块下的 `dispatch、commit、getters、state`，以及全局的 `rootState `和 `rootGetters`，所以我们定义的 `action` 函数能拿到当前模块下的 `commit` 方法。
 
 ```js
-  /* 在 mutation 中混合异步调用会导致你的程序很难调试。
-  例如，当你调用了两个包含异步回调的 mutation 来改变状态，
-  你怎么知道什么时候回调和哪个先回调呢？这就是为什么我们要区分这两个概念*/
-  dispatch (_type, _payload) { // tong
-    const {type, payload} = unifyObjectStyle(_type, _payload)
-    const entry = this._actions[type]
-    if (!entry) {
-      console.error(`[vuec] unkown actions type: ${type}`)
-      return
-    }
-    const result = Promise.all(entry.map(handler =>  //一个type对应多个action, 可能含有多个异步
-      handler(payload)
-    ))
-    return result
+/* 在 mutation 中混合异步调用会导致你的程序很难调试。
+例如，当你调用了两个包含异步回调的 mutation 来改变状态，
+你怎么知道什么时候回调和哪个先回调呢？这就是为什么我们要区分这两个概念*/
+dispatch (_type, _payload) { // tong
+  const {type, payload} = unifyObjectStyle(_type, _payload)
+  const entry = this._actions[type]
+  if (!entry) {
+    console.error(`[vuec] unkown actions type: ${type}`)
+    return
   }
+  const result = Promise.all(entry.map(handler =>  //一个type对应多个action, 可能含有多个异步
+    handler(payload)
+  ))
+  return result
+}
 ```
 **mapState**
 `map**`有两种输入形式
 ```js
-  computed: {
-    ...mapState(['name']),  // 数组
-    ...mapState({
-        name: state => state.name  // 对象
-    })
-  },
-  methods: {
-    ...mapMutations({
-      mapMutationsName: 'changeName'
-    }),
-    // ...mapMutations(['changeName'])  // 映射关系
-  }
+computed: {
+  ...mapState(['name']),  // 数组
+  ...mapState({
+      name: state => state.name  // 对象
+  })
+},
+methods: {
+  ...mapMutations({
+    mapMutationsName: 'changeName'
+  }),
+  // ...mapMutations(['changeName'])  // 映射关系
+}
 ```
 其实就是将执行`mapState()`返回一个对象, 通过`...`添加到计算属性中, 函数时: `val.call(this, this.$center.state, this.$center.getters)`传入`state`使得用户能访问`state`,
 
