@@ -195,7 +195,7 @@ dispatch (_type, _payload) { // tong
   return result
 }
 ```
-**mapState**
+**map..**
 
 `map**`有两种输入形式
 ```js
