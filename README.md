@@ -23,6 +23,10 @@
 
 ![](http://ww1.sinaimg.cn/large/b44313e1ly1fzjsg3h9jbj20j10e4t9b.jpg)
 
+逻辑图
+
+![](http://ww1.sinaimg.cn/large/b44313e1ly1fzjverkl6yj20w80pb0we.jpg)
+
 ### 插件安装
 `vuec`作为`vue`的一个插件, 具有`install`方法
 ```js
@@ -82,12 +86,14 @@ export default new Vuec.Center({
   }
 })
 ```
-**接着构建`_modules`模块树**, 
+**接着构建`_modules`模块树**
+
 `center`可以以模块为节点形成树状结构, 会递归`options`选项, 根据模块父子关系, 从`root`往下构建
 ```js
 this._modules = new ModuleCollection(options)
 ```
 **安装模块**
+
 1.根据模块树,完成对`state`树的构建
 2. 当前模块本地上下文构建`local`
 3.在`center`实例的`_muattions[type]`上注册`wrappedMutationHandler`
@@ -245,5 +251,7 @@ function normalizeMap (map) {
 }
 ```
 ## 参考
+
 [vuex](https://github.com/vuejs/vuex)
+
 [Vue.js技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
