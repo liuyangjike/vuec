@@ -15,6 +15,14 @@
 > 觉得对你有帮助,请点右上角的`Star`支持一下</br>
 > 推荐一下我的另一个项目“用console.log看vue源码” [点这里](https://github.com/liuyangjike/vue-console)
 
+## 解析
 
-### 参考
+### 目的
+不同组件共享的某些状态
+<img src="http://ww1.sinaimg.cn/large/b44313e1ly1fzjsg3h9jbj20j10e4t9b.jpg"/>
+
+
+
+
+## 参考
 [vuex](https://github.com/vuejs/vuex)

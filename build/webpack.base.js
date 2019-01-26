@@ -7,7 +7,7 @@ module.exports = {
   entry: path.resolve(__dirname, '../example/index.js'), // 使用绝对路径
   output: {
     path: path.resolve('dist'), // 使用绝对路径
-    filename: 'main.[hash:4].js',
+    filename: 'vue-center.ems.js',
   },
   resolve: {
     alias: {
