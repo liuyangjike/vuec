@@ -175,6 +175,7 @@ commit (_type, _payload) {  // 原型属性commit
 }
 ```
 **dispatch**
+
 这里传入的 `_type` 就是 `action` 的 `type`，我们可以从 `store._actions` 找到对应的函数数组，遍历它们执行获取到每个 `handler` 然后执行，实际上就是执行了 `wrappedActionHandler(payload)`，接着会执行我们定义的 `action` 函数，并传入一个对象，包含了当前模块下的 `dispatch、commit、getters、state`，以及全局的 `rootState `和 `rootGetters`，所以我们定义的 `action` 函数能拿到当前模块下的 `commit` 方法。
 
 ```js
@@ -216,9 +217,8 @@ methods: {
 
 `mapMutations()`也是类似的, 返回一个对象,通过`...`添加到`methods`里,一般`val`都是`function`,
 执行`center`实例上的`commit.apply(this.$center, [val].concat(args))`, `val`就成为`type`, `args`就时`payload`,
-**
-`mapGetter`类似`mapState`
-`mapActions`类似`mapMutations`**
+
+**`mapGetter`类似`mapState``mapActions`类似`mapMutations`**
 
 ```js
 
