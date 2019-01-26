@@ -95,10 +95,15 @@ this._modules = new ModuleCollection(options)
 **安装模块**
 
 1.根据模块树,完成对`state`树的构建
+
 2. 当前模块本地上下文构建`local`
+
 3.在`center`实例的`_muattions[type]`上注册`wrappedMutationHandler`
+
 4.在`center`实例的`_actions[type]`上注册`wrappedActionHandler`
+
 5.在center实例的`_wrappedGetters[type]`上注册`wrappedGetter`
+
 `wrappedMutationHandler`里面包含用户写的`mutation`, 往里传入当前模块的`state`, 用户就能获得`state`进行更改,其它`actions`等也是类似的
 ```js
 const state = this._modules.root.state
@@ -124,7 +129,9 @@ get state () {  // 代理了this.$center.state的最终访问值
 }
 ```
 1.利用`new Vue({})`转化成响应式
+
 2. 将`state`转化成`data`属性
+
 3.将`getter`转化成`computed`
 
 ### 实例化Vue组件
@@ -209,7 +216,10 @@ function vuecInit () {
     // ...mapMutations(['changeName'])  // 映射关系
   }
 ```
-其实就是将执行`mapState()`返回一个对象, 通过`...`添加到计算属性中, 函数时: `val.call(this, this.$center.state, this.$center.getters)`传入`state`使得用户能访问`state`,`getters`, 数组时: `this.$center.state[val]`直接返回对应值;
+其实就是将执行`mapState()`返回一个对象, 通过`...`添加到计算属性中, 函数时: `val.call(this, this.$center.state, this.$center.getters)`传入`state`使得用户能访问`state`,
+
+`getters`, 数组时: `this.$center.state[val]`直接返回对应值;
+
 `mapMutations()`也是类似的, 返回一个对象,通过`...`添加到`methods`里,一般`val`都是`function`,
 执行`center`实例上的`commit.apply(this.$center, [val].concat(args))`, `val`就成为`type`, `args`就时`payload`,
 **
